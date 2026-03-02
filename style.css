@@ -79,17 +79,32 @@ a { text-decoration: none; color: inherit; }
 }
 
 .nav-links a {
-  font-size: 0.9rem;
+  position: relative;
   color: var(--color-text-muted);
   transition: color 0.2s;
 }
 
 .nav-links a:hover { color: var(--color-text); }
 
+
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--color-accent);
+  transition: width 0.25s ease;
+}
+
 .nav-links a.active {
   color: var(--color-text);
   font-weight: 600;
-  border-bottom: 2px solid var(--color-accent);
+}
+
+.nav-links a.active::after {
+  width: 100%;
 }
 
 /* =============================================
@@ -161,12 +176,13 @@ a { text-decoration: none; color: inherit; }
   justify-content: center;
   font-weight: 700;
   font-size: 0.95rem;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease
 }
 
 .btn:hover {
-  transform: scale(1.07);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  transform: scale(1.08) translateY(-2px);
+  box-shadow: 0 12px 28px rgba(0,0,0,0.15);
+  filter: brightness(1.05);
 }
 
 .btn-yellow { background: var(--color-yellow); color: #fff; }
@@ -325,10 +341,13 @@ a { text-decoration: none; color: inherit; }
   font-weight: 600;
   background: var(--color-yellow);
   color: #fff;
-  transition: opacity 0.2s;
+  transition: transform 0.2s ease, opacity 0.2s ease;
 }
 
-.link-btn:hover { opacity: 0.85; }
+.link-btn:hover { 
+  transform: translateY(-2px);
+  opacity: 0.85;
+}
 
 .link-btn-outline {
   background: transparent;
@@ -455,3 +474,30 @@ a { text-decoration: none; color: inherit; }
 /* =============================================
    Transitions for Project Cards
    ============================================= */
+.project-card {
+  animation: sectionFade 0.4s ease both;
+}
+
+/* Each card delays slightly more than the previous */
+.project-card:nth-child(1) { animation-delay: 0.05s; }
+.project-card:nth-child(2) { animation-delay: 0.10s; }
+.project-card:nth-child(3) { animation-delay: 0.15s; }
+.project-card:nth-child(4) { animation-delay: 0.20s; }
+.project-card:nth-child(5) { animation-delay: 0.25s; }
+.project-card:nth-child(6) { animation-delay: 0.30s; }
+
+@keyframes sectionFade {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Apply the transitions to whatever in inside section */
+#app > section {
+  animation: sectionFade 0.35s ease both;
+}

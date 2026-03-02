@@ -4,16 +4,28 @@
 function router() {
     // Initialize the hash, if null then #home
     const hash = window.location.hash || '#home';
-    console.log(`router called with the hash: ${hash}`);
-    switch (hash) {
-        case '#home':       renderHome(); break;
-        case '#projects':   renderProjects(); break;
-        case '#resume':     renderResume(); break;
-        case '#contact':     renderContact(); break;
-        default: renderHome();
-    }
+    const app = document.getElementById('app');
+    // Fade out current content
+    app.style.opacity = '0';
+    app.style.transform = 'translateY(8px)';
+    app.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
 
-    updateActiveNav(hash);
+    // Swap content and fade back in
+    setTimeout(() => {
+       switch (hash) {
+            case '#home':       renderHome(); break;
+            case '#projects':   renderProjects(); break;
+            case '#resume':     renderResume(); break;
+            case '#contact':     renderContact(); break;
+            default: renderHome();
+        } 
+
+        updateActiveNav(hash);
+
+        // Fade in new content
+        app.style.opacity = '1';
+        app.style.transform = 'translateY(0)';
+    }, 200);
 }
 
 // Listen for hash changes and run on first load
