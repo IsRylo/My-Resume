@@ -1,0 +1,416 @@
+/* =============================================
+   CSS VARIABLES — change these to restyle easily
+   ============================================= */
+:root {
+  --color-bg: #f5f0e8;          /* warm cream background */
+  --color-bg-alt: #ebe4d5;      /* slightly deeper cream for alt sections */
+  --color-text: #1c2b1e;        /* deep forest green for text */
+  --color-text-muted: #6b7c6e;  /* muted sage for secondary text */
+  --color-yellow: #c85f1a;      /* burnt orange (replaces yellow button) */
+  --color-red: #2d5a35;         /* deep forest green (replaces red button) */
+  --color-teal: #a3b899;        /* soft sage green (replaces teal button) */
+  --color-accent: #c85f1a;      /* burnt orange accent */
+
+  --font-display: 'DM Serif Display', Georgia, serif;
+  --font-body: 'DM Sans', sans-serif;
+
+  --max-width: 1100px;
+  --section-padding: 80px 24px;
+}
+
+/* =============================================
+   RESET & BASE
+   ============================================= */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--color-bg);
+  color: var(--color-text);
+  line-height: 2;
+}
+
+img { max-width: 100%; display: block; }
+a { text-decoration: none; color: inherit; }
+
+/* =============================================
+   NAVBAR
+   ============================================= */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--color-bg);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 40px;
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+/* The yellow dot from the template */
+.nav-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  flex-shrink: 0;
+}
+
+.nav-title {
+  font-weight: 300;
+  color: var(--color-text-muted);
+}
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 32px;
+}
+
+.nav-links a {
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+  transition: color 0.2s;
+}
+
+.nav-links a:hover { color: var(--color-text); }
+
+/* =============================================
+   HERO
+   ============================================= */
+.hero {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 80px 40px;
+  display: flex;
+  align-items: center;
+  gap: 80px;
+  min-height: 80vh;
+}
+
+/* Circular photo */
+.hero-photo {
+  flex-shrink: 0;
+  width: 360px;
+  height: 360px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #ccc; /* shows if no image loaded */
+}
+
+.hero-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(100%); /* ← remove this line to show color photo */
+}
+
+/* Big "Hello" heading */
+.hero-text h1 {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 8vw, 6rem);
+  line-height: 1;
+  margin-bottom: 24px;
+  animation: fadeUp 0.7s ease both;
+}
+
+.hero-text h2 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+  animation: fadeUp 0.7s 0.15s ease both;
+}
+
+.hero-text p {
+  color: var(--color-text-muted);
+  max-width: 420px;
+  margin-bottom: 40px;
+  animation: fadeUp 0.7s 0.25s ease both;
+}
+
+/* Circle buttons */
+.hero-buttons {
+  display: flex;
+  gap: 20px;
+  animation: fadeUp 0.7s 0.35s ease both;
+}
+
+.btn {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.95rem;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn:hover {
+  transform: scale(1.07);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+}
+
+.btn-yellow { background: var(--color-yellow); color: #fff; }
+.btn-red    { background: var(--color-red);    color: #fff; }
+.btn-teal   { background: var(--color-teal);   color: #fff; }
+
+/* =============================================
+   SECTIONS — shared styles
+   ============================================= */
+.section {
+  padding: var(--section-padding);
+}
+
+.section-alt {
+  background: var(--color-bg-alt);
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-size: 2.5rem;
+  margin-bottom: 48px;
+  max-width: var(--max-width);
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 16px;
+}
+
+/* =============================================
+   RESUME
+   ============================================= */
+.resume-block {
+  max-width: var(--max-width);
+  margin: 0 auto 40px;
+  padding: 0 16px;
+}
+
+.resume-block h3 {
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--color-text-muted);
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+  padding-bottom: 8px;
+  margin-bottom: 24px;
+}
+
+.resume-item {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.resume-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.resume-date {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.resume-company {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.resume-details h4 {
+  font-size: 1rem;
+  margin-bottom: 6px;
+}
+
+.resume-details p {
+  color: var(--color-text-muted);
+  font-size: 0.95rem;
+}
+
+/* =============================================
+   PROJECTS
+   ============================================= */
+.projects-grid {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 16px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 32px;
+}
+
+.project-card {
+  background: var(--color-bg);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: transform 0.25s, box-shadow 0.25s;
+}
+
+.project-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 40px rgba(0,0,0,0.1);
+}
+
+.project-image {
+  height: 200px;
+  background: #d0cdc8; /* placeholder color when no image */
+  overflow: hidden;
+}
+
+.project-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.project-info {
+  padding: 24px;
+}
+
+.project-info h3 {
+  font-size: 1.1rem;
+  margin-bottom: 8px;
+}
+
+.project-info p {
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+  margin-bottom: 16px;
+}
+
+.project-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.tag {
+  background: rgba(45, 90, 53, 0.1);
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: #2d5a35;
+}
+
+.project-links {
+  display: flex;
+  gap: 12px;
+}
+
+.link-btn {
+  padding: 8px 18px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  background: var(--color-yellow);
+  color: #fff;
+  transition: opacity 0.2s;
+}
+
+.link-btn:hover { opacity: 0.85; }
+
+.link-btn-outline {
+  background: transparent;
+  color: var(--color-text);
+  border: 1.5px solid rgba(0,0,0,0.2);
+}
+
+/* =============================================
+   CONTACT
+   ============================================= */
+.contact-intro {
+  max-width: var(--max-width);
+  margin: 0 auto 32px;
+  padding: 0 16px;
+  color: var(--color-text-muted);
+}
+
+.contact-links {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--color-bg-alt);
+  padding: 14px 24px;
+  border-radius: 50px;
+  font-weight: 500;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.contact-item:hover {
+  background: var(--color-yellow);
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+.contact-icon {
+  font-style: normal;
+  font-weight: 700;
+}
+
+/* =============================================
+   FOOTER
+   ============================================= */
+.footer {
+  text-align: center;
+  padding: 32px;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  border-top: 1px solid rgba(0,0,0,0.08);
+}
+
+/* =============================================
+   ANIMATIONS
+   ============================================= */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* =============================================
+   RESPONSIVE
+   ============================================= */
+@media (max-width: 768px) {
+  .hero {
+    flex-direction: column;
+    padding: 48px 24px;
+    gap: 40px;
+    min-height: auto;
+  }
+
+  .hero-photo {
+    width: 260px;
+    height: 260px;
+  }
+
+  .resume-item {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+
+  .navbar { padding: 16px 20px; }
+  .nav-links { gap: 16px; }
+}
