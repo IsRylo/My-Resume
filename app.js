@@ -1,13 +1,15 @@
-// Function called whenever the URL has changes
+/**
+ * Function called whenever there is an update to the hash
+ */
 function router() {
-    console.log("router called");
     // Initialize the hash, if null then #home
     const hash = window.location.hash || '#home';
+    console.log(`router called with the hash: ${hash}`);
     switch (hash) {
         case '#home':       renderHome(); break;
         case '#projects':   renderProjects(); break;
         case '#resume':     renderResume(); break;
-        case 'contact':     renderContact(); break;
+        case '#contact':     renderContact(); break;
         default: renderHome();
     }
 
@@ -18,7 +20,9 @@ function router() {
 window.addEventListener('hashchange', router);
 window.addEventListener('load', router);
 
-
+/**
+ * Renders the home section
+ */
 function renderHome() {
     document.getElementById('app').innerHTML = `
         <section class="hero">
@@ -38,4 +42,85 @@ function renderHome() {
         </section>
     `;
 
+}
+
+/**
+ * Renders the Projects Section
+ */
+function renderProjects() {
+    // Starting with section wrapper + filter buttons
+    const tags = ['All', ...new Set(projects.flatMap(p => p.tags))];
+
+    const filterButtons = tags.map(tag =>  `
+        <button class="filter-btn ${tag === 'All' ? 'active' : ''}"
+                onclick="filterProjects('${tag}')">
+                ${tag}
+        </button>
+    `).join('');
+
+    // Buil all project cards
+    const cards = projects.map(p => projectCard(p)).join('');
+    
+    document.getElementById('app').innerHTML = `
+        <section class="section">
+        <h2 class="section-title">Projects</h2>
+        <div class="filter-bar">${filterButtons}</div>
+        <div class="projects-grid" id="projects-grid">${cards}</div>
+        </section>
+    `;
+}
+
+/**
+ * Helper Function to build individual project cards
+ */
+function projectCard(p) {
+    return `
+        <div class="project-card" data-tags="${p.tags.join(',')}">
+            <div class="project-image">
+                <img src="${p.image}" alt="${p.title}" />
+            </div>
+            <div class="project-info">
+                <h3>${p.title}</h3>
+                <p>${p.description}</p>
+                <div class="project-tags">
+                ${p.tags.map(t => `<span class="tag">${t}</span>`).join('')}
+                </div>
+                <div class="project-links">
+                <a href="${p.url}" target="_blank" class="link-btn">View Project</a>
+                <a href="${p.github}" target="_blank" class="link-btn link-btn-outline">GitHub</a>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+
+/**
+ * Function to filter project based on tags
+ */
+function filterProjects(tag) {
+  // Update active button
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.textContent.trim() === tag);
+  });
+
+  // Show/hide cards based on tag
+  document.querySelectorAll('.project-card').forEach(card => {
+    const cardTags = card.dataset.tags.split(',');
+    const match = tag === 'All' || cardTags.includes(tag);
+    card.style.display = match ? 'block' : 'none';
+  });
+}
+
+/**
+ * Function to update the navbar
+ */
+function updateActiveNav(hash) {
+    // Remove active class from all links
+    document.querySelectorAll('.nav-links a').forEach(a => {
+        a.classList.remove('active');
+    });
+    // Add it to the matching one
+    const active = document.querySelector(`.nav-links a[href="${hash}"]`);
+    if (active) active.classList.add('active');
 }
