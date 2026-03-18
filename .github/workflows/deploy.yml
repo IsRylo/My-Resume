@@ -1,18 +1,38 @@
-steps:
-  - name: Checkout code
-    uses: actions/checkout@v4
+name: Deploy Portfolio to GitHub Pages
 
-  - name: Inject contact endpoint secret
-    run: |
-      sed -i "s|YOUR_PLACEHOLDER|${{ secrets.CONTACT_ENDPOINT }}|g" app.js
+on:
+  push:
+    branches: [main]
 
-  - name: Setup Pages
-    uses: actions/configure-pages@v5
+permissions:
+  contents: read
+  pages: write
+  id-token: write
 
-  - name: Upload artifact
-    uses: actions/upload-pages-artifact@v3
-    with:
-      path: '.'
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
 
-  - name: Deploy to GitHub Pages
-    uses: actions/deploy-pages@v4
+    steps:
+      # 1. Download your repo code onto the runner machine
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2. Replace YOUR_PLACEHOLDER in app.js with the real secret URL
+      - name: Inject contact endpoint secret
+        run: |
+          sed -i "s|YOUR_PLACEHOLDER|${{ secrets.CONTACT_ENDPOINT }}|g" app.js
+
+      # 3. Package up your files ready for Pages deployment
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      # 4. Upload your project files as a deployable artifact
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'
+
+      # 5. Deploy the artifact to GitHub Pages
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4
