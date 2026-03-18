@@ -7,11 +7,7 @@ const CONTACT_ENDPOINT = (typeof CONFIG !== 'undefined')
       ? CONFIG.contactEndpoint
       : 'CONTACT_FORM';
      
-
-
 let lastSubmitTime = 0;
-
-console.log(CONTACT_ENDPOINT);
 
 function router() {
     // Initialize the hash, if null then #home
