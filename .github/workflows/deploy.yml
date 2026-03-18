@@ -9,30 +9,28 @@ permissions:
   pages: write
   id-token: write
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true  # ← add this block
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Download your repo code onto the runner machine
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 2. Replace YOUR_PLACEHOLDER in app.js with the real secret URL
       - name: Inject contact endpoint secret
         run: |
           sed -i "s|YOUR_PLACEHOLDER|${{ secrets.CONTACT_ENDPOINT }}|g" app.js
 
-      # 3. Package up your files ready for Pages deployment
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
-      # 4. Upload your project files as a deployable artifact
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: '.'
 
-      # 5. Deploy the artifact to GitHub Pages
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v4
