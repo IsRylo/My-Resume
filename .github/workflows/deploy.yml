@@ -2,7 +2,7 @@ name: Deploy Portfolio to GitHub Pages
 
 on:
   push:
-    branches: [main]
+    branches: [main] # only deploys from main — dev pushes are ignored
 
 permissions:
   contents: read

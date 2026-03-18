@@ -13,6 +13,7 @@ function router() {
     // Initialize the hash, if null then #home
     const hash = window.location.hash || '#home';
     const app = document.getElementById('app');
+    timelineIndex = 0;
     // Fade out current content
     app.style.opacity = '0';
     app.style.transform = 'translateY(8px)';
@@ -201,10 +202,10 @@ function renderContact() {
 
         <!-- Contact Links -->
         <div class="contact-links">
-          <a href="mailto:your@email.com" class="contact-item">
+          <button class="contact-item" onclick="copyEmail()">
             <span class="contact-icon">✉</span>
-            your@email.com
-          </a>
+            <span id="email-label">your@email.com</span>
+          </button>
           <a href="https://linkedin.com/in/yourprofile" target="_blank" class="contact-item">
             <span class="contact-icon">in</span>
             LinkedIn
@@ -324,6 +325,8 @@ function showFormMessage(type, text) {
   const form = document.getElementById('contact-form');
   form.parentNode.insertBefore(div, form);
 
+  div.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
   // Auto-remove info messages after 90 seconds
   if (type === 'info') {
     setTimeout(() => div.remove(), 90000);
@@ -384,4 +387,237 @@ function isRateLimited() {
   if (now - lastSubmitTime < cooldown) return true;
   lastSubmitTime = now;
   return false;
+}
+
+/**
+ * Function triggered on Click for copying email to user's clipboard
+ */
+function copyEmail() {
+  const email = 'loysingryono@gmail.com'
+
+  navigator.clipboard.writeText(email)
+    .then(() => {
+      // Temporarily change the label to confirm copy
+      const label = document.getElementById('email-label');
+      const original = label.textContent;
+
+      label.textContent = 'Email Copied!';
+      
+      // Wait 2 seconds before restorign tehe original
+      setTimeout(() => {
+        label.textContent = original;
+      }, 2000);
+    })
+    .catch(() => {
+      alert('Could not copy automatically. Please copy manually: ' + email);
+    });
+}
+
+/**
+ * Renders resume section of the program. 
+ */
+function renderResume() {
+  document.getElementById('app').innerHTML = `
+    <section class="resume-dashboard">
+
+      <!-- LEFT PANEL — 2/3 width -->
+      <div class="resume-left">
+      <div class="resume-left-header">
+          <h2 class="section-title">Resume</h2>
+          <a href="files/cv.pdf" download class="btn btn-yellow">
+            ↓ Download CV
+          </a>
+        </div>
+
+        <!-- Horizontal scrollable timeline -->
+        <div class="resume-block">
+          <h3 class="resume-block-title">Experience</h3>
+          <div class="timeline-container">
+            <button class="timeline-nav timeline-nav--prev" onclick="slideTimeline(-1)">‹</button>
+            <div class="timeline" id="timeline">
+              <div class="timeline-track"></div>
+              ${resume.experience.map((item, index) => `
+                <div class="timeline-item" style="animation-delay: ${index * 0.1}s">
+                  <div class="timeline-dot"></div>
+                  <div class="timeline-period">${item.period}</div>
+                  <div class="timeline-card">
+                    <h4>${item.role}</h4>
+                    <span class="timeline-company">${item.company}</span>
+                    <p>${item.description}</p>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+            <button class="timeline-nav timeline-nav--next" onclick="slideTimeline(1)">›</button>
+          </div>
+        </div>
+
+        <!-- Skills — moved from right to left panel -->
+        <div class="resume-block">
+          <h3 class="resume-block-title">Skills</h3>
+          <div class="stats-grid">
+            ${resume.skills.map((skill, index) => `
+              <div class="stat-item" style="animation-delay: ${index * 0.08}s">
+                <div class="stat-header">
+                  <span class="stat-name">${skill.name}</span>
+                </div>
+                <div class="stat-bar">
+                  <div class="stat-fill" data-level="${skill.level}"></div>
+                </div>
+                <span class="stat-category">${skill.category}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT PANEL — 1/3 width, passport only -->
+      <div class="resume-right">
+        <div class="resume-block">
+          <h3 class="resume-block-title">Education</h3>
+          <div class="passport-page">
+            ${resume.education.map((item, index) => `
+              <div class="stamp ${item.unlocked ? 'stamp--inked' : 'stamp--faded'}"
+                  style="--rotate: ${index % 2 === 0 ? '-2deg' : '1.5deg'};
+                          animation-delay: ${index * 0.2}s">
+                <div class="stamp-border">
+                  <div class="stamp-inner">
+
+                    <!-- Replace stamp-icon div with this -->
+                    <div class="stamp-logo">
+                      <img src="${item.logo}" alt="${item.institution} logo" />
+                    </div>
+
+                    <div class="stamp-country">${item.institution}</div>
+                    <div class="stamp-divider">✦ ✦ ✦</div>
+                    <div class="stamp-visa">${item.degree}</div>
+                    <div class="stamp-date">${item.period}</div>
+                    <div class="stamp-status">
+                      ${item.unlocked ? 'ADMITTED' : 'IN PROGRESS'}
+                    </div>
+                  </div>
+                </div>
+                <div class="stamp-description">${item.description}</div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+
+    </section>
+  `;
+
+  animateStatBars();
+  initTimeline();
+}
+
+// Tracks current timeline scroll position
+let timelineIndex = 0;
+
+function initTimeline() {
+  const timeline = document.getElementById('timeline');
+  if (!timeline) return;
+
+  // Enable touch/mouse swipe support
+  let startX = 0;
+  let isDragging = false;
+
+  // Touch events — mobile swipe
+  timeline.addEventListener('touchstart', e => {
+    startX = e.touches[0].clientX;
+  });
+
+  timeline.addEventListener('touchend', e => {
+    const diff = startX - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 50) {
+      slideTimeline(diff > 0 ? 1 : -1);
+    }
+  });
+
+  // Mouse drag events — desktop swipe
+  timeline.addEventListener('mousedown', e => {
+    startX = e.clientX;
+    isDragging = true;
+    timeline.style.cursor = 'grabbing';
+  });
+
+  timeline.addEventListener('mouseup', e => {
+    if (!isDragging) return;
+    isDragging = false;
+    timeline.style.cursor = 'grab';
+    const diff = startX - e.clientX;
+    if (Math.abs(diff) > 50) {
+      slideTimeline(diff > 0 ? 1 : -1);
+    }
+  });
+
+  // Cancel drag if mouse leaves timeline
+  timeline.addEventListener('mouseleave', () => {
+    isDragging = false;
+    timeline.style.cursor = 'grab';
+  });
+
+  updateNavButtons();
+}
+
+function slideTimeline(direction) {
+  const timeline = document.getElementById('timeline');
+  if (!timeline) return;
+
+  const itemWidth = 280 + 24; // card width + gap
+  const maxIndex = resume.experience.length - 1;
+
+  // Clamp index between 0 and max
+  timelineIndex = Math.max(0, Math.min(timelineIndex + direction, maxIndex));
+
+  // Scroll to the new position smoothly
+  timeline.scrollTo({
+    left: timelineIndex * itemWidth,
+    behavior: 'smooth'
+  });
+
+  updateNavButtons();
+}
+
+function updateNavButtons() {
+  const prev = document.querySelector('.timeline-nav--prev');
+  const next = document.querySelector('.timeline-nav--next');
+  if (!prev || !next) return;
+
+  const maxIndex = resume.experience.length - 1;
+
+  // Dim the button when at the start or end
+  prev.style.opacity = timelineIndex === 0 ? '0.3' : '1';
+  prev.style.pointerEvents = timelineIndex === 0 ? 'none' : 'auto';
+  next.style.opacity = timelineIndex === maxIndex ? '0.3' : '1';
+  next.style.pointerEvents = timelineIndex === maxIndex ? 'none' : 'auto';
+}
+
+// Triggers the stat bar fill animation
+function animateStatBars() {
+  // Small delay so the CSS transition is visible
+  setTimeout(() => {
+    document.querySelectorAll('.stat-fill').forEach(bar => {
+      bar.style.width = bar.dataset.level + '%';
+    });
+  }, 200);
+}
+
+// Helper — renders one experience or education item
+function resumeItem(item) {
+  return `
+    <div class="resume-item">
+      <div class="resume-meta">
+        <span class="resume-date">${item.period}</span>
+        <span class="resume-company">
+          ${item.company || item.institution}
+        </span>
+      </div>
+      <div class="resume-details">
+        <h4>${item.role || item.degree}</h4>
+        <p>${item.description}</p>
+      </div>
+    </div>
+  `;
 }
