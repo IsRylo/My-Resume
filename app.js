@@ -3,8 +3,15 @@
  */
 
 // app.js — add at the very top
+const CONTACT_ENDPOINT = (typeof CONFIG !== 'undefined') 
+      ? CONFIG.contactEndpoint
+      : 'CONTACT_FORM';
+     
 
-const CONTACT_ENDPOINT = 'https://script.google.com/macros/s/AKfycbxXkcAS23ia8tsOSmYUQG5qvBV_7gCvGWKNkw_eLOEjzbT709ME71L_3PzNMP-lGTD7Kw/exec';
+
+let lastSubmitTime = 0;
+
+console.log(CONTACT_ENDPOINT);
 
 function router() {
     // Initialize the hash, if null then #home
@@ -223,26 +230,65 @@ function renderContact() {
  // app.js — replace your existing submitForm() with this
 
 async function submitForm() {
-  // 1. Grab input values
-  const name    = document.getElementById('name').value.trim();
-  const email   = document.getElementById('email').value.trim();
-  const subject = document.getElementById('subject').value.trim();
-  const message = document.getElementById('message').value.trim();
+  // 1. Get raw values
+  const rawName    = document.getElementById('name').value;
+  const rawEmail   = document.getElementById('email').value;
+  const rawSubject = document.getElementById('subject').value;
+  const rawMessage = document.getElementById('message').value;
 
-  // 2. Validate required fields
+  // 2. Sanitize all inputs
+  const name    = sanitize(rawName);
+  const email   = sanitize(rawEmail);
+  const subject = sanitize(rawSubject);
+  const message = sanitize(rawMessage);
+
+  // 3. Validate required fields
   if (!name || !email || !message) {
-    alert('Please fill in your name, email, and message.');
+    showFormMessage('error', '⚠️ Please fill in your name, email, and message.');
     return;
   }
 
-  // 3. Show loading state
-  document.getElementById('btn-text').classList.add('hidden');
-  document.getElementById('btn-spinner').classList.remove('hidden');
+  // 4. Validate email format
+  if (!isValidEmail(email)) {
+    showFormMessage('error', '⚠️ Please enter a valid email address.');
+    return;
+  }
+
+  // 5. Check for dangerous content in all fields
+  if (!isSafeInput(name) || !isSafeInput(message) || !isSafeInput(subject)) {
+    showFormMessage('error', '⚠️ Your message contains invalid characters. Please remove any HTML or script tags.');
+    return;
+  }
+
+  // 6. Length limits — prevents someone sending a huge payload
+  if (name.length > 100) {
+    showFormMessage('error', '⚠️ Name must be under 100 characters.');
+    return;
+  }
+  if (subject.length > 200) {
+    showFormMessage('error', '⚠️ Subject must be under 200 characters.');
+    return;
+  }
+  if (message.length > 5000) {
+    showFormMessage('error', `⚠️ Message is too long (${message.length}/5000 characters).`);
+    return;
+  }
+
+  // 7. Rate limiting — prevents someone spamming the button
+  if (isRateLimited()) {
+    showFormMessage('error', '⚠️ Please wait a moment before sending another message.');
+    return;
+  }
+
+  setButtonLoading(true);
+  showFormMessage('info', '⏳ Sending your message... this may take up to a minute.');
+
+  // Set a timeout warning at 30 seconds
+  const slowWarning = setTimeout(() => {
+    showFormMessage('info', '🕐 Still sending... processing your request, please wait.');
+  }, 30000);
 
   try {
-    // 4. Send to Google Apps Script
-    // Note: mode 'no-cors' means we won't get a response body back
-    // but the script will still execute and send the email
     await fetch(CONTACT_ENDPOINT, {
       method: 'POST',
       mode: 'no-cors',
@@ -250,17 +296,96 @@ async function submitForm() {
       body: JSON.stringify({ name, email, subject, message })
     });
 
-    // 5. Since no-cors gives no response, assume success if no error thrown
+    clearTimeout(slowWarning);
+
+    // Hide the form and show success
     document.getElementById('contact-form').classList.add('hidden');
-    document.getElementById('form-success').classList.remove('hidden');
+    showFormMessage('success', '✓ Message sent! I\'ll get back to you soon.');
 
   } catch(error) {
-    // 6. Only hits here on network failure
-    document.getElementById('form-error').classList.remove('hidden');
+    clearTimeout(slowWarning);
+    showFormMessage('error', '✗ Something went wrong. Please try again or email me directly.');
 
   } finally {
-    // 7. Always reset button
-    document.getElementById('btn-text').classList.remove('hidden');
-    document.getElementById('btn-spinner').classList.add('hidden');
+    setButtonLoading(false);
   }
+}
+
+/**
+ * Helper - shows a message above the form
+ */
+
+function showFormMessage(type, text) {
+  // Remove any existing message first
+  const existing = document.getElementById('form-message');
+  if (existing) existing.remove();
+
+  const div = document.createElement('div');
+  div.id = 'form-message';
+  div.className = `form-message form-message--${type}`;
+  div.textContent = text;
+
+  const form = document.getElementById('contact-form');
+  form.parentNode.insertBefore(div, form);
+
+  // Auto-remove info messages after 90 seconds
+  if (type === 'info') {
+    setTimeout(() => div.remove(), 90000);
+  }
+}
+
+/**
+ * Helper function to toggle button loading state
+ */
+
+function setButtonLoading(isLoading) {
+  document.getElementById('btn-text').classList.toggle('hidden', isLoading);
+  document.getElementById('btn-spinner').classList.toggle('hidden', !isLoading);
+}
+
+
+/**
+ * 
+ * @param {string} str - Raw string input from forms.
+ * @returns {string} Safe string passed into my mail processing server.
+ */
+
+function sanitize(str) {
+  return str
+    .replace(/</g, '&lt;')    // replace < so no HTML tags work
+    .replace(/>/g, '&gt;')    // replace > so no HTML tags work
+    .replace(/&/g, '&amp;')   // replace & to prevent HTML entities
+    .trim();
+}
+
+/**
+ * Helper function
+ * @param {string} email - Email text from forms
+ * @returns {bool} Is the email a valid email format or not.
+ */
+function isValidEmail(email) {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+}
+
+/**
+ * Helper function 
+ * @param {string} str - Raw text input from forms
+ * @returns {bool} If the str contains unsafe patterns
+ */
+function isSafeInput(str) {
+  // Blocks common script injection patterns
+  const dangerousPatterns = /(<script|javascript:|on\w+=|<iframe|<img|<svg)/gi;
+  return !dangerousPatterns.test(str);
+}
+
+/**
+ * Helper function to prevent form being submitted mroe than once per 60 seconds
+ */
+function isRateLimited() {
+  const now = Date.now();
+  const cooldown = 60 * 1000;
+  if (now - lastSubmitTime < cooldown) return true;
+  lastSubmitTime = now;
+  return false;
 }

@@ -22,7 +22,7 @@ jobs:
 
       - name: Inject contact endpoint secret
         run: |
-          sed -i "s|YOUR_PLACEHOLDER|${{ secrets.CONTACT_ENDPOINT }}|g" app.js
+          sed -i "s|CONTACT_FORM|${{ secrets.CONTACT_ENDPOINT }}|g" app.js
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
