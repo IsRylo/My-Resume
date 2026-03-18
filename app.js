@@ -1,6 +1,11 @@
 /**
  * Function called whenever there is an update to the hash
  */
+
+// app.js — add at the very top
+
+const CONTACT_ENDPOINT = 'https://script.google.com/macros/s/AKfycbxXkcAS23ia8tsOSmYUQG5qvBV_7gCvGWKNkw_eLOEjzbT709ME71L_3PzNMP-lGTD7Kw/exec';
+
 function router() {
     // Initialize the hash, if null then #home
     const hash = window.location.hash || '#home';
@@ -135,4 +140,127 @@ function updateActiveNav(hash) {
     // Add it to the matching one
     const active = document.querySelector(`.nav-links a[href="${hash}"]`);
     if (active) active.classList.add('active');
+}
+
+
+
+/**
+ * Function to render the contact me section
+ */
+// app.js
+
+function renderContact() {
+  document.getElementById('app').innerHTML = `
+    <section class="section">
+      <h2 class="section-title">Contact</h2>
+      <p class="contact-intro">Have a question or want to work together? Send me a message!</p>
+
+      <div class="contact-wrapper">
+
+        <!-- Contact Form -->
+        <div class="contact-form-container">
+          <div id="form-success" class="form-success hidden">
+            <span class="success-icon">✓</span>
+            <p>Message sent! I'll get back to you soon.</p>
+          </div>
+
+          <div id="form-error" class="form-error hidden">
+            <p>Something went wrong. Please try again.</p>
+          </div>
+
+          <div id="contact-form">
+            <div class="form-group">
+              <label for="name">Name</label>
+              <input type="text" id="name" placeholder="Your name" required />
+            </div>
+
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input type="email" id="email" placeholder="your@email.com" required />
+            </div>
+
+            <div class="form-group">
+              <label for="subject">Subject</label>
+              <input type="text" id="subject" placeholder="What's this about?" />
+            </div>
+
+            <div class="form-group">
+              <label for="message">Message</label>
+              <textarea id="message" rows="5" placeholder="Your message here..." required></textarea>
+            </div>
+
+            <button class="submit-btn" onclick="submitForm()">
+              <span id="btn-text">Send Message</span>
+              <span id="btn-spinner" class="hidden">Sending...</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Contact Links -->
+        <div class="contact-links">
+          <a href="mailto:your@email.com" class="contact-item">
+            <span class="contact-icon">✉</span>
+            your@email.com
+          </a>
+          <a href="https://linkedin.com/in/yourprofile" target="_blank" class="contact-item">
+            <span class="contact-icon">in</span>
+            LinkedIn
+          </a>
+          <a href="https://github.com/IsRylo" target="_blank" class="contact-item">
+            <span class="contact-icon">⌥</span>
+            GitHub
+          </a>
+        </div>
+
+      </div>
+    </section>
+  `;
+}
+
+ /**
+  * Function to handle contact me form  submission
+  */
+ // app.js — replace your existing submitForm() with this
+
+async function submitForm() {
+  // 1. Grab input values
+  const name    = document.getElementById('name').value.trim();
+  const email   = document.getElementById('email').value.trim();
+  const subject = document.getElementById('subject').value.trim();
+  const message = document.getElementById('message').value.trim();
+
+  // 2. Validate required fields
+  if (!name || !email || !message) {
+    alert('Please fill in your name, email, and message.');
+    return;
+  }
+
+  // 3. Show loading state
+  document.getElementById('btn-text').classList.add('hidden');
+  document.getElementById('btn-spinner').classList.remove('hidden');
+
+  try {
+    // 4. Send to Google Apps Script
+    // Note: mode 'no-cors' means we won't get a response body back
+    // but the script will still execute and send the email
+    await fetch(CONTACT_ENDPOINT, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, subject, message })
+    });
+
+    // 5. Since no-cors gives no response, assume success if no error thrown
+    document.getElementById('contact-form').classList.add('hidden');
+    document.getElementById('form-success').classList.remove('hidden');
+
+  } catch(error) {
+    // 6. Only hits here on network failure
+    document.getElementById('form-error').classList.remove('hidden');
+
+  } finally {
+    // 7. Always reset button
+    document.getElementById('btn-text').classList.remove('hidden');
+    document.getElementById('btn-spinner').classList.add('hidden');
+  }
 }
