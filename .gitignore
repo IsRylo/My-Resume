@@ -1,3 +1,5 @@
 config.js
 .git
 .env
+
+.vscode/
