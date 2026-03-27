@@ -48,12 +48,12 @@ function renderHome() {
     document.getElementById('app').innerHTML = `
         <section class="hero">
             <div class="hero-photo">
-                <img src="images/photo.jpg" alt="Your Name" />
+                <img src="data/images/profile_picture.jpg" alt="Loysing Ismanto" />
             </div>
             <div class="hero-text">
                 <h1>Hello</h1>
                 <h2>A Bit About Me</h2>
-                <p>Your description here.</p>
+                <p>Bachelor of Computer Science (Software Development) graduate from Swinburne University of Technology. I'm driven by building practical solutions — whether that's training ML models, designing backend APIs, or programming web and mobile apps. Currently open to internships and entry-level roles.</p>
                 <div class="hero-buttons">
                 <a href="#resume"   class="btn btn-yellow">Resume</a>
                 <a href="#projects" class="btn btn-red">Projects</a>
@@ -151,7 +151,6 @@ function updateActiveNav(hash) {
 /**
  * Function to render the contact me section
  */
-// app.js
 
 function renderContact() {
   document.getElementById('app').innerHTML = `
@@ -204,9 +203,9 @@ function renderContact() {
         <div class="contact-links">
           <button class="contact-item" onclick="copyEmail()">
             <span class="contact-icon">✉</span>
-            <span id="email-label">your@email.com</span>
+            <span id="email-label">loysingryono@gmail.com</span>
           </button>
-          <a href="https://linkedin.com/in/yourprofile" target="_blank" class="contact-item">
+          <a href="https://au.linkedin.com/in/loysing-ismanto-142521280" target="_blank" class="contact-item">
             <span class="contact-icon">in</span>
             LinkedIn
           </a>
@@ -224,7 +223,6 @@ function renderContact() {
  /**
   * Function to handle contact me form  submission
   */
- // app.js — replace your existing submitForm() with this
 
 async function submitForm() {
   // 1. Get raw values
@@ -424,7 +422,7 @@ function renderResume() {
       <div class="resume-left">
       <div class="resume-left-header">
           <h2 class="section-title">Resume</h2>
-          <a href="files/cv.pdf" download class="btn btn-yellow">
+          <a href="data/cv.pdf" download class="btn btn-yellow">
             ↓ Download CV
           </a>
         </div>

@@ -1,48 +1,50 @@
 const resume = {
   experience: [
     {
-      company:     'Company Name',
-      role:        'Job Title',
-      period:      'Jan 2022 — Present',
-      description: 'Describe your impact here.'
+      company:     'Starbucks Australia',
+      role:        'Shift Supervisor',
+      period:      'Aug 2023 — Present',
+      description: 'Managing day to day operation during a shift. Reduced wastage by 5%. '
     },
     {
-      company:     'Previous Company',
-      role:        'Previous Job Title',
-      period:      'Jun 2019 — Dec 2021',
-      description: 'Describe your responsibilities here.'
+      company:     'Universitas Multimedia Nusantara',
+      role:        'Teaching Assistant',
+      period:      'Jan 2021 — Jun 2021',
+      description: 'Facilitated the learning process of OOP to a class of 20. Create the practical mid-term examination for the unit. Conducted a seminar on basic programming strategies.'
     },
-    {
-      company:     'First Company',
-      role:        'First Job Title',
-      period:      'Jan 2017 — May 2019',
-      description: 'Describe your first role here.'
-    }
   ],
 
   education: [
     {
-        institution: 'University Name',
-        degree:      'Degree, Major',
-        period:      '2015 — 2019',
-        description: 'Any relevant honors, activities, or coursework.',
-        logo:        'images/education/university-name.png', // ← path to logo
+        institution: 'Swinburne University of Technology',
+        degree:      'Bachelor of Information Communication Technology, Software Development',
+        period:      '2023 — 2024',
+        description: 'Capstone Project: Mobililty Driving School (driving lesson booking platform)',
+        logo:        'data/images/education/swinburne.png',
         unlocked:    true
     },
     {
-        institution: 'Online Course / Bootcamp',
-        degree:      'Certification Name',
-        period:      '2020',
-        description: 'What you learned or built during this course.',
-        logo:        'images/education/bootcamp-name.png',
+        institution: 'Universitas Multimedia Nusantara',
+        degree:      'Sarjana Komputer Teknik Informatika',
+        period:      '2020-2024',
+        description: 'Teaching Assistant (1 sem). Fundamentals of Programming',
+        logo:        'data/images/education/umn.png',
         unlocked:    true
     },
     {
-        institution: 'In Progress',
-        degree:      'Course or Degree Name',
-        period:      '2024 — Present',
-        description: 'Currently working towards this.',
-        logo:        'images/education/in-progress.png',
+        institution: 'Certiport',
+        degree:      'IT Specialist - Software Development',
+        period:      'Jul 2024',
+        description: 'Credential ID dUab-DkTw',
+        logo:        'data/images/education/it_specialist.png',
+        unlocked:    true
+    },
+    {
+        institution: 'In-Progress',
+        degree:      'Network Engineer Certificate',
+        period:      'Present',
+        description: 'Learning for a Certificate',
+        logo:        '',
         unlocked:    false
     }
     ],
@@ -52,9 +54,10 @@ const resume = {
     { name: 'HTML & CSS',   level: 90, category: 'Frontend' },
     { name: 'JavaScript',   level: 80, category: 'Frontend' },
     { name: 'React',        level: 70, category: 'Frontend' },
+    { name: 'PHP',          level: 80, category: 'Backend' },
     { name: 'Node.js',      level: 65, category: 'Backend'  },
     { name: 'Python',       level: 60, category: 'Backend'  },
     { name: 'Git & GitHub', level: 85, category: 'Tools'    },
-    { name: 'Figma',        level: 75, category: 'Tools'    }
+    { name: 'Figma',        level: 75, category: 'Tools'    },
   ]
 };
